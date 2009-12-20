@@ -37,7 +37,7 @@ Cambridge, MA 02139, USA.  */
 #endif
 
 #ifdef __UCLIBC_HAS_STDIO_SHUTDOWN_ON_ABORT__
-extern void weak_function _stdio_term(void) attribute_hidden;
+extern void weak_function _stdio_term(void);
 #endif
 static smallint been_there_done_that = 0;
 

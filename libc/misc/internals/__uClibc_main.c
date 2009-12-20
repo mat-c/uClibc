@@ -68,9 +68,9 @@ extern int *weak_const_function __errno_location(void);
 extern int *weak_const_function __h_errno_location(void);
 //libc_hidden_proto(__h_errno_location)
 
-extern void weak_function _stdio_init(void) attribute_hidden;
+extern void weak_function _stdio_init(void);
 #ifdef __UCLIBC_HAS_LOCALE__
-extern void weak_function _locale_init(void) attribute_hidden;
+extern void weak_function _locale_init(void);
 #endif
 #ifdef __UCLIBC_HAS_THREADS__
 extern void weak_function __pthread_initialize_minimal(void);
