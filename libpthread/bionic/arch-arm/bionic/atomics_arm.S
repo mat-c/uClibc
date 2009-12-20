@@ -25,7 +25,8 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <sys/linux-syscalls.h>
+//#include <sys/linux-syscalls.h>
+#include <sys/syscall.h>
 
 .global __atomic_cmpxchg
 .global __atomic_swap
@@ -152,6 +153,7 @@ __atomic_swap:
 #endif
     bx      lr
 
+#if 0
 /* __futex_wait(*ftx, val, *timespec) */
 /* __futex_syscall(*ftx, op, val, *timespec, *addr2, val3) */
 
@@ -194,4 +196,5 @@ __futex_wake:
     swi     #__NR_futex
     bx      lr
 
+#endif
 #endif

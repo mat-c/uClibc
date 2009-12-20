@@ -25,32 +25,26 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-//#include <asm/unistd.h>
-#include <sys/syscall.h>
-
-.text
-.type _exit_with_stack_teardown, #function
-.globl _exit_with_stack_teardown
-.align 4
-
-@ void _exit_with_stack_teardown(void * stackBase, int stackSize, int retCode)
-
-_exit_with_stack_teardown:
-
-#if __ARM_EABI__
-    mov     lr, r2
-    ldr     r7, =__NR_munmap
-    swi     #0              @ the stack is destroyed by this call
-    mov     r0, lr
-    ldr     r7, =__NR_exit
-    swi     #0
-#else
-    mov     lr, r2
-    swi     # __NR_munmap   @ the stack is destroyed by this call
-    mov     r0, lr
-    swi     # __NR_exit
+/* see the implementation of __set_tls and pthread.c to understand this
+ * code. Basically, the content of gs:[0] always is a pointer to the base
+ * address of the tls region
+ */
+#ifndef BIONIC_TLS_ARCH_H
+#define BIONIC_TLS_ARCH_H
+static inline void*   __get_tls(void)
+{
+/* Linux kernel helpers for its TLS implementation */
+/* For performance reasons, avoid calling the kernel helper
+ * Note that HAVE_ARM_TLS_REGISTER is build-specific
+ * (it must match your kernel configuration)
+ */
+#  ifdef HAVE_ARM_TLS_REGISTER
+#    define __get_tls() \
+    ({ register unsigned int __val asm("r0"); \
+       asm ("mrc p15, 0, r0, c13, c0, 3" : "=r"(__val) ); \
+       (volatile void*)__val; })
+#  else /* !HAVE_ARM_TLS_REGISTER */
+#    define __get_tls() ( *((volatile void **) 0xffff0ff0) )
+#  endif
+}
 #endif
-
-    @ exit() should never return, cause a crash if it does
-    mov		r0, #0
-    ldr		r0, [r0]
