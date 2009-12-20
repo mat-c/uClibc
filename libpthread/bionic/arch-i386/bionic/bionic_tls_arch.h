@@ -29,9 +29,12 @@
  * code. Basically, the content of gs:[0] always is a pointer to the base
  * address of the tls region
  */
-void*   __get_tls(void)
+#ifndef BIONIC_TLS_ARCH_H
+#define BIONIC_TLS_ARCH_H
+static inline void*   __get_tls(void)
 {
   void*  tls;
   __asm__ ( "   movl  %%gs:0, %0" : "=r"(tls) );
   return tls;
 }
+#endif

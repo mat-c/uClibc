@@ -87,6 +87,7 @@ extern void __init_tls(void**  tls, void*  thread_info);
 /* syscall only, do not call directly */
 extern int __set_tls(void *ptr);
 
+#if 0
 /* get the TLS */
 #ifdef __arm__
 /* Linux kernel helpers for its TLS implementation */
@@ -104,6 +105,9 @@ extern int __set_tls(void *ptr);
 #  endif
 #else
 extern void*  __get_tls( void );
+#endif
+#else
+#include "bionic_tls_arch.h"
 #endif
 
 /* return the stack base and size, used by our malloc debugger */
