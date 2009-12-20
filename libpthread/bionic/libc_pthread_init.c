@@ -1,4 +1,6 @@
 /*
+ * Based on bionic/libc/bionic/libc_init_common.c :
+ *
  * Copyright (C) 2008 The Android Open Source Project
  * All rights reserved.
  *
@@ -30,40 +32,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <elf.h>
-#include <asm/page.h>
 #include "pthread_internal.h"
-#include "atexit.h"
-#include "libc_init_common.h"
 
 #include <bionic_tls.h>
 #include <errno.h>
 
-extern unsigned __get_sp(void);
-extern pid_t    gettid(void);
+#include "thread_private.h"
 
-char*  __progname;
-char **environ;
-
-/* from asm/page.h */
-unsigned int __page_size = PAGE_SIZE;
-unsigned int __page_shift = PAGE_SHIFT;
-
-
-int __system_properties_init(void);
-
-void __libc_init_common(uintptr_t *elfdata)
+void __pthread_initialize_minimal(void)
 {
-    int     argc = *elfdata;
-    char**  argv = (char**)(elfdata + 1);
-    char**  envp = argv + argc + 1;
-
     pthread_attr_t             thread_attr;
     static pthread_internal_t  thread;
     static void*               tls_area[BIONIC_TLS_SLOTS];
 
     /* setup pthread runtime and maint thread descriptor */
-    unsigned stacktop = (__get_sp() & ~(PAGE_SIZE - 1)) + PAGE_SIZE;
+    unsigned stacktop = (((long)&stacktop) & ~(PAGE_SIZE - 1)) + PAGE_SIZE;
     unsigned stacksize = 128 * 1024;
     unsigned stackbottom = stacktop - stacksize;
 
@@ -72,15 +55,6 @@ void __libc_init_common(uintptr_t *elfdata)
     _init_thread(&thread, gettid(), &thread_attr, (void*)stackbottom);
     __init_tls(tls_area, &thread);
 
-    /* clear errno - requires TLS area */
-    errno = 0;
-
-    /* set program name */
-    __progname = argv[0] ? argv[0] : "<unknown>";
-
-    /* setup environment pointer */
-    environ = envp;
-
-    /* setup system properties - requires environment */
-    __system_properties_init();
 }
+
+int __isthreaded;

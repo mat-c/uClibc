@@ -589,7 +589,7 @@ LDFLAGS:=$(LDFLAGS_NOSTRIP) -Wl,-z,defs
 ifeq ($(DODEBUG),y)
 CFLAGS += -O0 -g3
 else
-CFLAGS += $(OPTIMIZATION)
+CFLAGS += $(OPTIMIZATION) -g
 endif
 ifeq ($(DOSTRIP),y)
 LDFLAGS += -Wl,-s
@@ -620,10 +620,14 @@ ifeq ($(UCLIBC_HAS_THREADS),y)
 ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
 	PTNAME := nptl
 else
+ifeq ($(UCLIBC_HAS_THREADS_BIONIC),y)
+	PTNAME := bionic
+else
 ifeq ($(LINUXTHREADS_OLD),y)
 	PTNAME := linuxthreads.old
 else
 	PTNAME := linuxthreads
+endif
 endif
 endif
 PTDIR := libpthread/$(PTNAME)

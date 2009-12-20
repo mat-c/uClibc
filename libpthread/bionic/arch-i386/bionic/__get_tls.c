@@ -32,6 +32,6 @@
 void*   __get_tls(void)
 {
   void*  tls;
-  asm ( "   movl  %%gs:0, %0" : "=r"(tls) );
+  __asm__ ( "   movl  %%gs:0, %0" : "=r"(tls) );
   return tls;
 }

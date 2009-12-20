@@ -55,10 +55,11 @@ __BEGIN_DECLS
 /* Well known TLS slots */
 #define TLS_SLOT_SELF               0
 #define TLS_SLOT_THREAD_ID          1
-#define TLS_SLOT_ERRNO              2
+#define TLS_SLOT_H_ERRNO            2
+#define TLS_SLOT_ERRNO              3
 
-#define TLS_SLOT_OPENGL_API         3
-#define TLS_SLOT_OPENGL             4
+#define TLS_SLOT_OPENGL_API         4
+#define TLS_SLOT_OPENGL             5
 
 /* this slot is only used to pass information from the dynamic linker to
  * libc.so when the C library is loaded in to memory. The C runtime init

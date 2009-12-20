@@ -37,10 +37,16 @@
 /*
  * Types
  */
+#if 0
 typedef struct
 {
     int volatile value;
 } pthread_mutex_t;
+#else
+/* uclibc wants pthreadtypes.h for mutex types */
+#define _PTHREAD_H
+#include <bits/pthreadtypes.h>
+#endif
 
 #define  PTHREAD_MUTEX_INITIALIZER             {0}
 #define  PTHREAD_RECURSIVE_MUTEX_INITIALIZER   {0x4000}
@@ -59,6 +65,8 @@ enum {
 
 
 
+#if 0
+/* uclibc wants pthreadtypes.h for types */
 typedef struct
 {
     int volatile value;
@@ -81,13 +89,15 @@ typedef int pthread_key_t;
 typedef long pthread_t;
 
 typedef volatile int  pthread_once_t;
+#endif
 
 /*
  * Defines
  */
 #define PTHREAD_COND_INITIALIZER  {0}
 
-#define PTHREAD_STACK_MIN (2 * PAGE_SIZE)
+/* defined in limits.h */
+//#define PTHREAD_STACK_MIN (2 * PAGE_SIZE)
 
 #define PTHREAD_CREATE_DETACHED  0x00000001
 #define PTHREAD_CREATE_JOINABLE  0x00000000
@@ -103,7 +113,7 @@ typedef volatile int  pthread_once_t;
 /*
  * Prototypes
  */
-#if __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -219,8 +229,12 @@ int pthread_key_delete (pthread_key_t);
 int pthread_setspecific(pthread_key_t key, const void *value);
 void *pthread_getspecific(pthread_key_t key);
 
+#if 0
 int pthread_kill(pthread_t tid, int sig);
 int pthread_sigmask(int how, const sigset_t *set, sigset_t *oset);
+#else
+#include <bits/sigthread.h>
+#endif
 
 int pthread_getcpuclockid(pthread_t  tid, clockid_t  *clockid);
 
@@ -258,13 +272,16 @@ extern void  __pthread_cleanup_pop(__pthread_cleanup_t*  c,
         __pthread_cleanup_pop( &__cleanup, (execute)); \
     } while (0);
 
-#if __cplusplus
+#ifdef __cplusplus
 } /* extern "C" */
 #endif
 
+/* FIXME special uclibc*/
+#define _pthread_cleanup_buffer __pthread_cleanup_t
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 /************ TO FIX ************/
 
-#define LONG_LONG_MAX __LONG_LONG_MAX__
-#define LONG_LONG_MIN (-__LONG_LONG_MAX__ - 1)
+//#define LONG_LONG_MAX __LONG_LONG_MAX__
+//#define LONG_LONG_MIN (-__LONG_LONG_MAX__ - 1)
 
 #endif // _PTHREAD_H_

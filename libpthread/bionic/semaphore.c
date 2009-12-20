@@ -28,7 +28,7 @@
 #include <semaphore.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <sys/atomics.h>
+#include <bionic_atomics.h>
 #include <time.h>
 
 int sem_init(sem_t *sem, int pshared, unsigned int value)

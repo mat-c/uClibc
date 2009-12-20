@@ -28,7 +28,12 @@
 #include <errno.h>
 #include <bionic_tls.h>
 
-volatile int*  __errno( void )
+int*  __errno_location( void )
 {
   return  &((volatile int*)__get_tls())[TLS_SLOT_ERRNO];
+}
+
+int*  __h_errno_location( void )
+{
+  return  &((volatile int*)__get_tls())[TLS_SLOT_H_ERRNO];
 }

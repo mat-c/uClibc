@@ -26,6 +26,7 @@
  * SUCH DAMAGE.
  */
 #include <sys/types.h>
+#if 0
 #include <sys/ptrace.h>
 
 extern long __ptrace(int request, pid_t pid, void *addr, void *data);
@@ -53,6 +54,7 @@ long ptrace(int request, pid_t pid, void * addr, void * data)
              return __ptrace(request, pid, addr, data);
     }
 }
+#endif
 
 /*
  * Hook for gdb to get notified when a thread is created

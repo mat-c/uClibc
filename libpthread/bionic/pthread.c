@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <sys/atomics.h>
+#include <bionic_atomics.h>
 #include <bionic_tls.h>
 #include <sys/mman.h>
 #include <pthread.h>
@@ -44,10 +44,12 @@
 #include <assert.h>
 #include <malloc.h>
 
+#if 0
 extern int  __pthread_clone(int (*fn)(void*), void *child_stack, int flags, void *arg);
-extern void _exit_with_stack_teardown(void * stackBase, int stackSize, int retCode);
 extern void _exit_thread(int  retCode);
 extern int  __set_errno(int);
+#endif
+extern void _exit_with_stack_teardown(void * stackBase, int stackSize, int retCode);
 
 void _thread_created_hook(pid_t thread_id) __attribute__((noinline));
 
@@ -1667,7 +1669,7 @@ static void pthread_key_clean_all(void)
 }
 
 // man says this should be in <linux/unistd.h>, but it isn't
-extern int tkill(int tid, int sig);
+//extern int tkill(int tid, int sig);
 
 int pthread_kill(pthread_t tid, int sig)
 {
@@ -1684,7 +1686,7 @@ int pthread_kill(pthread_t tid, int sig)
     return ret;
 }
 
-extern int __rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t);
+//extern int __rt_sigprocmask(int, const sigset_t *, sigset_t *, size_t);
 
 int pthread_sigmask(int how, const sigset_t *set, sigset_t *oset)
 {
@@ -1722,3 +1724,6 @@ int  pthread_once( pthread_once_t*  once_control,  void (*init_routine)(void) )
     }
     return 0;
 }
+
+/* for test */
+strong_alias (pthread_once, __pthread_once)
