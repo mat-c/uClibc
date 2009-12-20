@@ -71,12 +71,12 @@ _event_getmsg_helper(td_thrhandle_t const * handle, void * bkpt_addr)
 {
     void * pc;
 
-    pc = (void *)ptrace(PTRACE_PEEKUSR, handle->tid, (void *)60 /* r15/pc */, NULL);
+    pc = (void *)ptrace(PTRACE_PEEKUSER, handle->tid, (void *)60 /* r15/pc */, NULL);
 
     if (pc == bkpt_addr) {
         // The hook function takes the id of the new thread as it's first param,
         // so grab it from r0.
-        gEventMsgHandle.pid = ptrace(PTRACE_PEEKUSR, handle->tid, (void *)0 /* r0 */, NULL);
+        gEventMsgHandle.pid = ptrace(PTRACE_PEEKUSER, handle->tid, (void *)0 /* r0 */, NULL);
         gEventMsgHandle.tid = gEventMsgHandle.pid;
         return 0x42;
     }
