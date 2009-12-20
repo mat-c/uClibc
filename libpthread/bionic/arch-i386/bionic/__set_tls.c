@@ -69,7 +69,7 @@ static struct user_desc  _tls_desc =
     1,
     0,
     1,
-    0
+//    0
 };
 
 struct _thread_area_head {
