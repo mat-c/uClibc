@@ -452,6 +452,9 @@ config UCLIBC_HAS_THREADS_NATIVE
 	  that way until further notice at which point this notice will
 	  disappear. Thank you for your support and for not smoking.
 
+config UCLIBC_HAS_THREADS_BIONIC
+	bool "bionic thread"
+
 endchoice
 
 config UCLIBC_HAS_THREADS
@@ -2185,7 +2188,7 @@ config DODEBUG_PT
 config DOSTRIP
 	bool "Strip libraries and executables"
 	default y
-	depends on !DODEBUG
+	#depends on !DODEBUG
 	help
 	  Say Y here if you do wish to strip all uClibc libraries and
 	  executables.  No stripping increases the size of the binaries

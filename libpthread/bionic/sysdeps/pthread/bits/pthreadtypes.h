@@ -25,22 +25,44 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef _SYS_ATOMICS_H
-#define _SYS_ATOMICS_H
 
-#include <sys/cdefs.h>
-#include <sys/time.h>
+#ifndef _BITS_PTHREADTYPES_H
+#define _BITS_PTHREADTYPES_H    1
 
-__BEGIN_DECLS
+#include <stdint.h>
+/* sched.h redifine sched_priority ... */
+//#include <sched.h>
+#define sched_priority  __sched_priority
 
-extern int __atomic_cmpxchg(int old, int _new, volatile int *ptr);
-extern int __atomic_swap(int _new, volatile int *ptr);
-extern int __atomic_dec(volatile int *ptr);
-extern int __atomic_inc(volatile int *ptr);
+typedef struct
+{
+    int volatile value;
+} pthread_mutex_t;
 
-int __futex_wait(volatile void *ftx, int val, const struct timespec *timeout);
-int __futex_wake(volatile void *ftx, int count);
 
-__END_DECLS
 
-#endif /* _SYS_ATOMICS_H */
+
+typedef struct
+{
+    int volatile value;
+} pthread_cond_t;
+
+typedef struct
+{
+    uint32_t flags;
+    void * stack_base;
+    size_t stack_size;
+    size_t guard_size;
+    int32_t sched_policy;
+    int32_t sched_priority;
+} pthread_attr_t;
+
+typedef long pthread_mutexattr_t;
+typedef long pthread_condattr_t;
+
+typedef int pthread_key_t;
+typedef long pthread_t;
+
+typedef volatile int  pthread_once_t;
+
+#endif

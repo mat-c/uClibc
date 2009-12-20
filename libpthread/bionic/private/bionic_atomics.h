@@ -25,71 +25,41 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <pthread.h>
+#ifndef _SYS_ATOMICS_H
+#define _SYS_ATOMICS_H
 
+#include <sys/cdefs.h>
+#include <sys/time.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
-struct user_desc {
-    unsigned int    entry_number;
-    unsigned long   base_addr;
-    unsigned int    limit;
-    unsigned int    seg_32bit:1;
-    unsigned int    contents:2;
-    unsigned int    read_exec_only:1;
-    unsigned int    limit_in_pages:1;
-    unsigned int    seg_not_present:1;
-    unsigned int    useable:1;
-    unsigned int    empty:25;
-};
+__BEGIN_DECLS
 
-extern int __set_thread_area(struct user_desc *u_info);
+extern int __atomic_cmpxchg(int old, int _new, volatile int *ptr);
+extern int __atomic_swap(int _new, volatile int *ptr);
+extern int __atomic_dec(volatile int *ptr);
+extern int __atomic_inc(volatile int *ptr);
 
-/* the following can't be const, since the first call will
- * update the 'entry_number' field
- */
-static struct user_desc  _tls_desc =
+/* this flag avoid to take a lock on linux kernel mm */
+#define FUTEX_PRIVATE_FLAG 128
+
+#define FUTEX_WAIT (0|FUTEX_PRIVATE_FLAG)
+#define FUTEX_WAKE (1|FUTEX_PRIVATE_FLAG)
+
+static inline int __futex_wait(volatile void *ftx, int val, const struct timespec *timeout)
 {
-    -1,
-    0,
-    0x1000,
-    1,
-    0,
-    0,
-    1,
-    0,
-    1,
-    0
-};
-
-struct _thread_area_head {
-    void *self;
-};
-
-/* we implement thread local storage through the gs: segment descriptor
- * we create a segment descriptor for the tls
- */
-int __set_tls(void *ptr)
-{
-    int   rc, segment;
-
-    _tls_desc.base_addr = (unsigned long)ptr;
-
-    /* We also need to write the location of the tls to ptr[0] */
-    ((struct _thread_area_head *)ptr)->self = ptr;
-
-    rc = __set_thread_area( &_tls_desc );
-    if (rc != 0)
-    {
-        /* could not set thread local area */
-        return -1;
-    }
-
-    /* this weird computation comes from GLibc */
-    segment = _tls_desc.entry_number*8 + 3;
-    asm __volatile__ (
-        "   movw %w0, %%gs" :: "q"(segment)
-    );
-    return 0;
+    int ret;
+	ret=INLINE_SYSCALL(futex, 4, ftx,FUTEX_WAIT,val,timeout/*,NULL,0*/);
+    return ret;
 }
 
+static inline int __futex_wake(volatile void *ftx, int count)
+{
+    int ret;
+	ret=INLINE_SYSCALL(futex,4,ftx,FUTEX_WAKE,count,NULL/*,NULL,0*/);
+    return ret;
+}
 
+__END_DECLS
 
+#endif /* _SYS_ATOMICS_H */

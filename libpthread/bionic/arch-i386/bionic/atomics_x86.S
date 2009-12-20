@@ -1,3 +1,4 @@
+#if 0
 #include <sys/linux-syscalls.h>
 
 #define FUTEX_WAIT 0
@@ -40,7 +41,7 @@ __futex_wake:
     int     $0x80
     popl    %ebx
     ret
-
+#endif
 
 /* int __atomic_cmpxchg(int old, int new, volatile int* addr) */
 

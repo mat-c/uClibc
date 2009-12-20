@@ -1,4 +1,4 @@
-#include <sys/linux-syscalls.h>
+#include <sys/syscall.h>
 
 .text
 .type _exit_with_stack_teardown, @function
