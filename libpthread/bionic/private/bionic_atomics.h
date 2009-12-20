@@ -41,7 +41,9 @@ extern int __atomic_dec(volatile int *ptr);
 extern int __atomic_inc(volatile int *ptr);
 
 /* this flag avoid to take a lock on linux kernel mm */
-#define FUTEX_PRIVATE_FLAG 128
+//#define FUTEX_PRIVATE_FLAG 128
+/* XXX this is not true anymore since bionic support shared mutex */
+#define FUTEX_PRIVATE_FLAG 0
 
 #define FUTEX_WAIT (0|FUTEX_PRIVATE_FLAG)
 #define FUTEX_WAKE (1|FUTEX_PRIVATE_FLAG)
