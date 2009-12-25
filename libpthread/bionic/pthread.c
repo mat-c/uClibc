@@ -1095,7 +1095,7 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex)
 
             if ( tid == MUTEX_OWNER(mutex) )
             {
-                int  oldv, counter;
+                int  counter;
 
                 if (mtype == MUTEX_TYPE_ERRORCHECK) {
                     /* already locked by ourselves */
@@ -1187,7 +1187,6 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *absti
         else
         {
             int  tid = __get_thread()->kernel_id;
-            int  oldv;
 
             if ( tid == MUTEX_OWNER(mutex) )
             {
