@@ -1161,15 +1161,9 @@ __timespec_to_relative_msec(struct timespec*  abstime, unsigned  msecs, clockid_
     }
 }
 
-int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
+int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *abstime)
 {
     clockid_t        clock = CLOCK_MONOTONIC;
-    struct timespec  abstime;
-    struct timespec  ts;
-
-    /* compute absolute expiration time */
-    __timespec_to_relative_msec(&abstime, msecs, clock);
-
     if (__likely(mutex != NULL))
     {
         int  mtype = (mutex->value & MUTEX_TYPE_MASK);
@@ -1182,7 +1176,8 @@ int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
 
             /* loop while needed */
             while (__atomic_swap(2, &mutex->value) != 0) {
-                if (__timespec_to_absolute(&ts, &abstime, clock) < 0)
+                struct timespec  ts;
+                if (__timespec_to_absolute(&ts, abstime, clock) < 0)
                     return EBUSY;
 
                 __futex_wait(&mutex->value, 2, &ts);
@@ -1243,7 +1238,7 @@ int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
                      */
                     new_lock_type = 2;
 
-                    if (__timespec_to_absolute(&ts, &abstime, clock) < 0)
+                    if (__timespec_to_absolute(&ts, abstime, clock) < 0)
                         return EBUSY;
 
                     __futex_wait( &mutex->value, oldv, &ts );
@@ -1253,6 +1248,17 @@ int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
         }
     }
     return EINVAL;
+}
+
+int pthread_mutex_lock_timeout_np(pthread_mutex_t *mutex, unsigned msecs)
+{
+    clockid_t        clock = CLOCK_MONOTONIC;
+    struct timespec  abstime;
+
+    /* compute absolute expiration time */
+    __timespec_to_relative_msec(&abstime, msecs, clock);
+
+    return pthread_mutex_timedlock(mutex, &abstime);
 }
 
 
