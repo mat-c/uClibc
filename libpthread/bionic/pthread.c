@@ -414,7 +414,7 @@ int pthread_attr_getschedparam(pthread_attr_t const * attr, struct sched_param *
 
 int pthread_attr_setstacksize(pthread_attr_t * attr, size_t stack_size)
 {
-    if ((stack_size & (PAGE_SIZE - 1) || stack_size < PTHREAD_STACK_MIN)) {
+    if (stack_size < PTHREAD_STACK_MIN) {
         return EINVAL;
     }
     attr->stack_size = stack_size;
